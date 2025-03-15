@@ -1,38 +1,21 @@
 {
-  "name": "animejs",
-  "version": "3.2.2",
-  "homepage": "http://animejs.com",
-  "repository": "juliangarnier/anime",
-  "description": "JavaScript animation engine",
-  "umd:main": "lib/anime.min.js",
-  "module": "lib/anime.es.js",
-  "main": "lib/anime.js",
-  "umd:name": "anime",
-  "license": "MIT",
-  "author": "Julian Garnier <hello@julian.gr>",
-  "files": [
-    "lib"
-  ],
+  "name": "caterpillar-gladiators",
+  "version": "1.0.0",
+  "description": "A fun two-player web-based game where caterpillars battle to knock beads off each other",
+  "main": "public/index.html",
   "scripts": {
-    "build": "node build"
+    "build": "echo 'Build completed'"
   },
-  "bugs": {
-    "url": "https://github.com/juliangarnier/anime/issues"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ddelaveaga/caterpillargladiotorking.git"
   },
   "keywords": [
-    "anime",
-    "animation",
-    "javascript",
-    "CSS",
-    "transforms",
-    "SVG",
-    "canvas"
+    "game",
+    "caterpillar",
+    "anime.js",
+    "javascript"
   ],
-  "devDependencies": {
-    "gzip-size": "^4.1.0",
-    "pretty-bytes": "^4.0.2",
-    "rollup": "^0.53.2",
-    "rollup-plugin-buble": "^0.18.0",
-    "uglify-js": "^3.3.4"
-  }
+  "author": "ddelaveaga",
+  "license": "MIT"
 }

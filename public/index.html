@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caterpillar Gladiators</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <div id="game-board"></div>
+        <div class="controls-panel">
+            <div class="score-board">
+                <div class="player-score" id="player1-score">Player 1: <span>8</span></div>
+                <div class="player-score" id="player2-score">Player 2: <span>8</span></div>
+            </div>
+            <div class="speed-control">
+                <label for="speed-slider">Game Speed:</label>
+                <input type="range" id="speed-slider" min="1" max="10" value="5" step="1">
+                <span id="speed-value">5</span>
+            </div>
+        </div>
+        <div id="game-over" class="hidden">
+            <h2>Game Over!</h2>
+            <p id="winner-text"></p>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+
+    <div class="instructions">
+        <h2>How to Play</h2>
+        <div class="controls">
+            <div class="player">
+                <h3>Player 1 (Green)</h3>
+                <p>Move: W, A, S, D</p>
+                <p>Shoot: Space</p>
+            </div>
+            <div class="player">
+                <h3>Player 2 (Blue)</h3>
+                <p>Move: Arrow Keys</p>
+                <p>Shoot: Enter</p>
+            </div>
+        </div>
+        <p>Collect beads to grow longer. Shoot to knock beads off your opponent.</p>
+        <p>The first player to knock all beads off their opponent wins!</p>
+        <p>Use the speed slider to adjust how fast the caterpillars move.</p>
+        <p><strong>Warning:</strong> When a player is down to their last segment, it will pulse red!</p>
+    </div>
+
+    <script src="lib/anime.min.js"></script>
+    <script src="game.js"></script>
+</body>
+</html> 
