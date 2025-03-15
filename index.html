@@ -14,6 +14,16 @@
                 <div class="player-score" id="player1-score">Player 1: <span>8</span></div>
                 <div class="player-score" id="player2-score">Player 2: <span>8</span></div>
             </div>
+            <div class="life-counters">
+                <div class="life-counter player1-lives">
+                    <span class="life-label">Player 1 Lives:</span>
+                    <div class="life-segments" id="player1-lives"></div>
+                </div>
+                <div class="life-counter player2-lives">
+                    <span class="life-label">Player 2 Lives:</span>
+                    <div class="life-segments" id="player2-lives"></div>
+                </div>
+            </div>
             <div class="speed-control">
                 <label for="speed-slider">Game Speed:</label>
                 <input type="range" id="speed-slider" min="1" max="10" value="5" step="1">
@@ -78,7 +88,7 @@
             <p>Tap the "Show Mobile Controls" button to display touch controls.</p>
         </div>
         <p>Collect beads to grow longer. Shoot to knock beads off your opponent.</p>
-        <p>The first player to knock all beads off their opponent wins!</p>
+        <p>The life counter shows how many segments each caterpillar has. When a player reaches zero lives, they lose!</p>
         <p>Use the speed slider to adjust how fast the caterpillars move.</p>
         <p><strong>Warning:</strong> When a player is down to their last segment, it will pulse red!</p>
     </div>

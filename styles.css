@@ -386,6 +386,16 @@ body {
         width: 50px;
         height: 50px;
     }
+    
+    .life-counter {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    
+    .life-segment {
+        width: 12px;
+        height: 12px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -402,5 +412,82 @@ body {
     
     #game-board {
         height: 35vh;
+    }
+}
+
+/* Life counter styles */
+.life-counters {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.life-counter {
+    background-color: #333;
+    padding: 8px 12px;
+    border-radius: 5px;
+    margin-bottom: 5px;
+    color: white;
+    width: 48%;
+    box-sizing: border-box;
+}
+
+.player1-lives {
+    border-left: 4px solid #4CAF50;
+}
+
+.player2-lives {
+    border-left: 4px solid #2196F3;
+}
+
+.life-label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.life-segments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.life-segment {
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.player1-life {
+    background-color: #4CAF50;
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.7);
+}
+
+.player2-life {
+    background-color: #2196F3;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.7);
+}
+
+.life-segment.lost {
+    background-color: #555;
+    box-shadow: none;
+    opacity: 0.3;
+}
+
+.life-segment.critical {
+    animation: pulse-life 0.8s infinite alternate;
+}
+
+@keyframes pulse-life {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.7);
+    }
+    to {
+        transform: scale(1.2);
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.9);
     }
 } 

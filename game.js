@@ -9,12 +9,15 @@ const BEAD_COUNT = 5;
 const BASE_MOVEMENT_SPEED = 5;
 const PROJECTILE_SPEED = 8;
 const SPAWN_INTERVAL = 5000; // Spawn a new bead every 5 seconds
+const MAX_LIFE_DISPLAY = 12; // Maximum number of life segments to show in the UI
 
 // Game state
 let gameRunning = false;
 let gameBoard = document.getElementById('game-board');
 let player1Score = document.querySelector('#player1-score span');
 let player2Score = document.querySelector('#player2-score span');
+let player1Lives = document.getElementById('player1-lives');
+let player2Lives = document.getElementById('player2-lives');
 let gameOverScreen = document.getElementById('game-over');
 let winnerText = document.getElementById('winner-text');
 let restartButton = document.getElementById('restart-button');
@@ -60,6 +63,7 @@ class Caterpillar {
         this.baseSpeed = BASE_MOVEMENT_SPEED;
         this.color = color;
         this.shootCooldown = 0;
+        this.maxLives = INITIAL_SEGMENTS;
         this.element = document.createElement('div');
         this.element.className = `caterpillar player${playerId}`;
         gameBoard.appendChild(this.element);
@@ -68,10 +72,52 @@ class Caterpillar {
         for (let i = 0; i < INITIAL_SEGMENTS; i++) {
             this.addSegment(x - (direction.x * SEGMENT_SIZE * i), y - (direction.y * SEGMENT_SIZE * i));
         }
+        
+        // Initialize life counter
+        this.updateLifeCounter();
     }
 
     get speed() {
         return this.baseSpeed * gameSpeedMultiplier;
+    }
+    
+    get lives() {
+        return this.segments.length;
+    }
+    
+    updateLifeCounter() {
+        const livesContainer = this.playerId === 1 ? player1Lives : player2Lives;
+        const segmentClass = this.playerId === 1 ? 'player1-life' : 'player2-life';
+        
+        // Clear existing life segments
+        livesContainer.innerHTML = '';
+        
+        // Determine how many segments to show based on current and max lives
+        const displayLives = Math.min(this.lives, MAX_LIFE_DISPLAY);
+        const totalToShow = Math.max(displayLives, this.maxLives);
+        
+        // Create the visual segments
+        for (let i = 0; i < totalToShow; i++) {
+            const lifeSegment = document.createElement('div');
+            lifeSegment.className = 'life-segment ' + segmentClass;
+            
+            // Mark segments as lost if they exceed current lives
+            if (i >= this.lives) {
+                lifeSegment.classList.add('lost');
+            }
+            
+            // Mark the last remaining segment as critical
+            if (this.lives === 1 && i === 0) {
+                lifeSegment.classList.add('critical');
+            }
+            
+            livesContainer.appendChild(lifeSegment);
+        }
+        
+        // Update the maximum lives count if we've grown beyond it
+        if (this.lives > this.maxLives) {
+            this.maxLives = this.lives;
+        }
     }
 
     addSegment(x, y) {
@@ -94,6 +140,9 @@ class Caterpillar {
         } else {
             player2Score.textContent = this.segments.length;
         }
+        
+        // Update life counter display
+        this.updateLifeCounter();
 
         // Check if we need to remove the last-segment class from any segment
         this.updateLastSegmentStatus();
@@ -101,8 +150,8 @@ class Caterpillar {
 
     removeSegment() {
         if (this.segments.length <= 1) {
-            // Game over if only the head remains
-            endGame(this.playerId === 1 ? 2 : 1);
+            // This is the last segment - game will end if hit again
+            this.updateLastSegmentStatus();
             return;
         }
 
@@ -115,11 +164,14 @@ class Caterpillar {
         } else {
             player2Score.textContent = this.segments.length;
         }
+        
+        // Update life counter display
+        this.updateLifeCounter();
 
         // Create a bead at the position of the removed segment
         createBead(lastSegment.x, lastSegment.y);
 
-        // Check if we're down to the last segment (head + 1 body segment)
+        // Check if we're down to the last segment (head only)
         this.updateLastSegmentStatus();
     }
 
@@ -129,13 +181,13 @@ class Caterpillar {
             segment.element.classList.remove('last-segment');
         });
 
-        // If we're down to 2 segments (head + 1 body), add the last-segment class
-        if (this.segments.length === 2) {
-            this.segments[1].element.classList.add('last-segment');
+        // If we're down to 1 segment (head only), add the last-segment class
+        if (this.segments.length === 1) {
+            this.segments[0].element.classList.add('last-segment');
             
             // Add a dramatic animation using anime.js
             anime({
-                targets: this.segments[1].element,
+                targets: this.segments[0].element,
                 scale: [1, 1.2, 1],
                 boxShadow: [
                     '0 0 0 0 rgba(255, 0, 0, 0)',
@@ -687,16 +739,14 @@ function checkCollisions() {
             gameBoard.removeChild(projectile.element);
             projectiles.splice(i, 1);
             
-            // Check if player 1 is down to last segment
-            const isLastSegment = player1.segments.length === 2;
-            
-            player1.removeSegment();
-            
-            // If it was the last segment, show special game over
-            if (isLastSegment) {
-                endGameWithSpecialAnimation(2);
+            // Check if player 1 is down to very last segment
+            if (player1.segments.length === 1) {
+                endGameWithSpecialAnimation(2); // Player 2 wins
                 return;
             }
+            
+            // Otherwise just remove a segment
+            player1.removeSegment();
             
             // Add hit animation using anime.js
             anime({
@@ -719,16 +769,14 @@ function checkCollisions() {
             gameBoard.removeChild(projectile.element);
             projectiles.splice(i, 1);
             
-            // Check if player 2 is down to last segment
-            const isLastSegment = player2.segments.length === 2;
-            
-            player2.removeSegment();
-            
-            // If it was the last segment, show special game over
-            if (isLastSegment) {
-                endGameWithSpecialAnimation(1);
+            // Check if player 2 is down to very last segment
+            if (player2.segments.length === 1) {
+                endGameWithSpecialAnimation(1); // Player 1 wins
                 return;
             }
+            
+            // Otherwise just remove a segment
+            player2.removeSegment();
             
             // Add hit animation using anime.js
             anime({
