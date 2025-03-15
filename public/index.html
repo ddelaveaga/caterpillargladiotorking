@@ -2,13 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caterpillar Gladiators</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div class="game-container">
         <div id="game-board"></div>
+        
+        <!-- Mobile Controls -->
+        <div class="mobile-controls">
+            <!-- Player 1 Controls -->
+            <div class="player-controls player1-controls">
+                <div class="direction-pad">
+                    <button id="p1-up" class="control-btn up-btn"><i class="fas fa-chevron-up"></i></button>
+                    <button id="p1-left" class="control-btn left-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button id="p1-right" class="control-btn right-btn"><i class="fas fa-chevron-right"></i></button>
+                    <button id="p1-down" class="control-btn down-btn"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <button id="p1-shoot" class="shoot-btn">SHOOT</button>
+            </div>
+            
+            <!-- Player 2 Controls -->
+            <div class="player-controls player2-controls">
+                <div class="direction-pad">
+                    <button id="p2-up" class="control-btn up-btn"><i class="fas fa-chevron-up"></i></button>
+                    <button id="p2-left" class="control-btn left-btn"><i class="fas fa-chevron-left"></i></button>
+                    <button id="p2-right" class="control-btn right-btn"><i class="fas fa-chevron-right"></i></button>
+                    <button id="p2-down" class="control-btn down-btn"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <button id="p2-shoot" class="shoot-btn">SHOOT</button>
+            </div>
+        </div>
+        
         <div class="controls-panel">
             <div class="score-board">
                 <div class="player-score" id="player1-score">Player 1: <span>8</span></div>
@@ -32,19 +59,23 @@
         <div class="controls">
             <div class="player">
                 <h3>Player 1 (Green)</h3>
-                <p>Move: W, A, S, D</p>
-                <p>Shoot: Space</p>
+                <p>Desktop: W, A, S, D keys & Space</p>
+                <p>Mobile: Left controls & shoot button</p>
             </div>
             <div class="player">
                 <h3>Player 2 (Blue)</h3>
-                <p>Move: Arrow Keys</p>
-                <p>Shoot: Enter</p>
+                <p>Desktop: Arrow Keys & Enter</p>
+                <p>Mobile: Right controls & shoot button</p>
             </div>
         </div>
         <p>Collect beads to grow longer. Shoot to knock beads off your opponent.</p>
         <p>The first player to knock all beads off their opponent wins!</p>
         <p>Use the speed slider to adjust how fast the caterpillars move.</p>
         <p><strong>Warning:</strong> When a player is down to their last segment, it will pulse red!</p>
+        
+        <div class="device-toggle">
+            <button id="toggle-mobile-controls">Toggle Mobile Controls</button>
+        </div>
     </div>
 
     <script src="lib/anime.min.js"></script>

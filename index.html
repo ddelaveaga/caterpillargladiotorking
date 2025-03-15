@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Caterpillar Gladiators</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -19,11 +19,43 @@
                 <input type="range" id="speed-slider" min="1" max="10" value="5" step="1">
                 <span id="speed-value">5</span>
             </div>
+            <div class="mobile-toggle">
+                <button id="toggle-controls">Show Mobile Controls</button>
+            </div>
         </div>
         <div id="game-over" class="hidden">
             <h2>Game Over!</h2>
             <p id="winner-text"></p>
             <button id="restart-button">Play Again</button>
+        </div>
+        
+        <!-- Mobile Controls -->
+        <div id="mobile-controls" class="hidden">
+            <!-- Player 1 Controls -->
+            <div class="mobile-player-controls player1-controls">
+                <div class="direction-pad">
+                    <button class="control-btn up-btn" data-key="w">↑</button>
+                    <div class="middle-row">
+                        <button class="control-btn left-btn" data-key="a">←</button>
+                        <button class="control-btn right-btn" data-key="d">→</button>
+                    </div>
+                    <button class="control-btn down-btn" data-key="s">↓</button>
+                </div>
+                <button class="shoot-btn" data-key="space">SHOOT</button>
+            </div>
+            
+            <!-- Player 2 Controls -->
+            <div class="mobile-player-controls player2-controls">
+                <div class="direction-pad">
+                    <button class="control-btn up-btn" data-key="arrowUp">↑</button>
+                    <div class="middle-row">
+                        <button class="control-btn left-btn" data-key="arrowLeft">←</button>
+                        <button class="control-btn right-btn" data-key="arrowRight">→</button>
+                    </div>
+                    <button class="control-btn down-btn" data-key="arrowDown">↓</button>
+                </div>
+                <button class="shoot-btn" data-key="enter">SHOOT</button>
+            </div>
         </div>
     </div>
 
@@ -40,6 +72,10 @@
                 <p>Move: Arrow Keys</p>
                 <p>Shoot: Enter</p>
             </div>
+        </div>
+        <div class="mobile-instructions">
+            <p>On mobile, use the on-screen controls to move and shoot.</p>
+            <p>Tap the "Show Mobile Controls" button to display touch controls.</p>
         </div>
         <p>Collect beads to grow longer. Shoot to knock beads off your opponent.</p>
         <p>The first player to knock all beads off their opponent wins!</p>

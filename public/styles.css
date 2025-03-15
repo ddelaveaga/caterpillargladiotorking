@@ -2,6 +2,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    touch-action: manipulation;
 }
 
 body {
@@ -13,17 +14,20 @@ body {
     justify-content: center;
     min-height: 100vh;
     padding: 20px;
+    overflow-x: hidden;
 }
 
 .game-container {
     position: relative;
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     margin-bottom: 30px;
 }
 
 #game-board {
-    width: 800px;
-    height: 600px;
+    width: 100%;
+    height: 60vh;
+    max-height: 600px;
     background-color: #222;
     border-radius: 8px;
     position: relative;
@@ -85,6 +89,7 @@ body {
 
 .instructions {
     max-width: 800px;
+    width: 100%;
     background-color: white;
     padding: 20px;
     border-radius: 8px;
@@ -99,6 +104,7 @@ body {
 
 .controls {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-around;
     margin-bottom: 20px;
 }
@@ -106,6 +112,9 @@ body {
 .player {
     padding: 10px;
     border-radius: 5px;
+    margin-bottom: 10px;
+    flex: 1;
+    min-width: 250px;
 }
 
 .player:first-child {
@@ -137,7 +146,7 @@ body {
     z-index: 10;
 }
 
-#restart-button {
+#restart-button, #toggle-mobile-controls {
     margin-top: 20px;
     padding: 10px 20px;
     background-color: #4CAF50;
@@ -149,7 +158,7 @@ body {
     transition: background-color 0.3s;
 }
 
-#restart-button:hover {
+#restart-button:hover, #toggle-mobile-controls:hover {
     background-color: #388E3C;
 }
 
@@ -223,4 +232,157 @@ body {
 
 .player2-projectile {
     background-color: #2196F3;
+}
+
+/* Mobile Controls Styles */
+.mobile-controls {
+    display: none;
+    width: 100%;
+    margin-top: 15px;
+    justify-content: space-between;
+}
+
+.player-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 48%;
+}
+
+.player1-controls {
+    color: #4CAF50;
+}
+
+.player2-controls {
+    color: #2196F3;
+}
+
+.direction-pad {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin-bottom: 10px;
+}
+
+.control-btn {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 2px solid currentColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.up-btn {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.down-btn {
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.left-btn {
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.right-btn {
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.shoot-btn {
+    width: 80px;
+    height: 40px;
+    background-color: currentColor;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.device-toggle {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+    
+    #game-board {
+        height: 50vh;
+    }
+    
+    .mobile-controls {
+        display: flex;
+    }
+    
+    .instructions {
+        padding: 15px;
+    }
+    
+    .controls {
+        flex-direction: column;
+    }
+    
+    .player {
+        margin-bottom: 15px;
+    }
+    
+    .speed-control label {
+        font-size: 0.9rem;
+    }
+    
+    #game-over {
+        padding: 20px;
+        width: 80%;
+    }
+}
+
+@media (max-width: 480px) {
+    .direction-pad {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .control-btn {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .shoot-btn {
+        width: 70px;
+        height: 35px;
+        font-size: 0.9rem;
+    }
+    
+    .player-score {
+        padding: 5px 10px;
+        font-size: 1rem;
+    }
+    
+    #game-over h2 {
+        font-size: 1.5rem;
+    }
+    
+    #restart-button {
+        padding: 8px 15px;
+    }
 } 

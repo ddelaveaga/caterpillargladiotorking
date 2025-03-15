@@ -20,8 +20,13 @@ let winnerText = document.getElementById('winner-text');
 let restartButton = document.getElementById('restart-button');
 let speedSlider = document.getElementById('speed-slider');
 let speedValue = document.getElementById('speed-value');
+let toggleControlsButton = document.getElementById('toggle-controls');
+let mobileControls = document.getElementById('mobile-controls');
 let gameSpeedMultiplier = 1;
 let lastSegmentWarningActive = false;
+let isMobileControlsVisible = false;
+let actualGameWidth, actualGameHeight;
+let scaleRatio = 1;
 
 // Game objects
 let player1 = null;
@@ -228,8 +233,17 @@ class Caterpillar {
             };
 
             projectile.element.className = `projectile player${this.playerId}-projectile`;
-            projectile.element.style.left = `${projectile.x - PROJECTILE_SIZE / 2}px`;
-            projectile.element.style.top = `${projectile.y - PROJECTILE_SIZE / 2}px`;
+            
+            // Apply scaling for responsive design
+            const scaledX = projectile.x * scaleRatio;
+            const scaledY = projectile.y * scaleRatio;
+            const scaledSize = PROJECTILE_SIZE * scaleRatio;
+            
+            projectile.element.style.width = `${scaledSize}px`;
+            projectile.element.style.height = `${scaledSize}px`;
+            projectile.element.style.left = `${scaledX - (scaledSize / 2)}px`;
+            projectile.element.style.top = `${scaledY - (scaledSize / 2)}px`;
+            
             gameBoard.appendChild(projectile.element);
             projectiles.push(projectile);
 
@@ -274,8 +288,17 @@ function createBead(x, y) {
     };
 
     bead.element.className = 'bead';
-    bead.element.style.left = `${bead.x - BEAD_SIZE / 2}px`;
-    bead.element.style.top = `${bead.y - BEAD_SIZE / 2}px`;
+    
+    // Apply scaling for responsive design
+    const scaledX = bead.x * scaleRatio;
+    const scaledY = bead.y * scaleRatio;
+    const scaledSize = BEAD_SIZE * scaleRatio;
+    
+    bead.element.style.width = `${scaledSize}px`;
+    bead.element.style.height = `${scaledSize}px`;
+    bead.element.style.left = `${scaledX - (scaledSize / 2)}px`;
+    bead.element.style.top = `${scaledY - (scaledSize / 2)}px`;
+    
     gameBoard.appendChild(bead.element);
     beads.push(bead);
 
@@ -289,45 +312,247 @@ function createBead(x, y) {
     });
 }
 
-// Game initialization
+// Resize game board to maintain aspect ratio
+function resizeGameBoard() {
+    const container = document.querySelector('.game-container');
+    const containerWidth = container.clientWidth;
+    
+    // Determine the actual game dimensions based on container width
+    actualGameWidth = containerWidth;
+    actualGameHeight = (GAME_HEIGHT / GAME_WIDTH) * containerWidth;
+    
+    // Apply new dimensions to game board
+    gameBoard.style.width = actualGameWidth + 'px';
+    gameBoard.style.height = actualGameHeight + 'px';
+    
+    // Calculate scale ratio for game objects
+    scaleRatio = actualGameWidth / GAME_WIDTH;
+}
+
+// Initialize the game
 function initGame() {
-    // Clear game board
-    gameBoard.innerHTML = '';
+    // Reset game state
+    gameRunning = true;
     beads = [];
     projectiles = [];
-    lastSegmentWarningActive = false;
-
+    gameBoard.innerHTML = '';
+    gameOverScreen.classList.add('hidden');
+    
+    // Resize the game board
+    resizeGameBoard();
+    
     // Create players
     player1 = new Caterpillar(
         1,
         GAME_WIDTH * 0.25,
-        GAME_HEIGHT / 2,
+        GAME_HEIGHT * 0.5,
         '#4CAF50',
         { x: 1, y: 0 }
     );
-
+    
     player2 = new Caterpillar(
         2,
         GAME_WIDTH * 0.75,
-        GAME_HEIGHT / 2,
+        GAME_HEIGHT * 0.5,
         '#2196F3',
         { x: -1, y: 0 }
     );
-
+    
     // Create initial beads
     for (let i = 0; i < BEAD_COUNT; i++) {
-        createBead();
+        const x = Math.random() * (GAME_WIDTH - BEAD_SIZE * 2) + BEAD_SIZE;
+        const y = Math.random() * (GAME_HEIGHT - BEAD_SIZE * 2) + BEAD_SIZE;
+        createBead(x, y);
     }
-
-    // Reset timers
-    beadSpawnTimer = SPAWN_INTERVAL;
+    
+    // Start game loop
     lastFrameTime = performance.now();
-
-    // Start game
-    gameRunning = true;
-    gameOverScreen.classList.add('hidden');
     requestAnimationFrame(gameLoop);
 }
+
+// Setup game controls
+function setupControls() {
+    // Keyboard controls
+    window.addEventListener('keydown', function(e) {
+        updateKeyState(e.key.toLowerCase(), true);
+    });
+    
+    window.addEventListener('keyup', function(e) {
+        updateKeyState(e.key.toLowerCase(), false);
+    });
+    
+    // Mobile controls toggle
+    toggleControlsButton.addEventListener('click', function() {
+        isMobileControlsVisible = !isMobileControlsVisible;
+        if (isMobileControlsVisible) {
+            mobileControls.classList.remove('hidden');
+            toggleControlsButton.textContent = 'Hide Mobile Controls';
+        } else {
+            mobileControls.classList.add('hidden');
+            toggleControlsButton.textContent = 'Show Mobile Controls';
+        }
+    });
+    
+    // Touch controls
+    const controlButtons = document.querySelectorAll('.control-btn, .shoot-btn');
+    
+    controlButtons.forEach(button => {
+        // Handle touch start
+        button.addEventListener('touchstart', function(e) {
+            e.preventDefault(); // Prevent default touch behavior
+            const key = this.getAttribute('data-key');
+            updateKeyState(key, true);
+        });
+        
+        // Handle touch end
+        button.addEventListener('touchend', function(e) {
+            e.preventDefault();
+            const key = this.getAttribute('data-key');
+            updateKeyState(key, false);
+        });
+        
+        // Handle mouse events (for testing on desktop)
+        button.addEventListener('mousedown', function(e) {
+            const key = this.getAttribute('data-key');
+            updateKeyState(key, true);
+        });
+        
+        button.addEventListener('mouseup', function(e) {
+            const key = this.getAttribute('data-key');
+            updateKeyState(key, false);
+        });
+        
+        // Handle mouse leave (in case user drags off button)
+        button.addEventListener('mouseleave', function(e) {
+            const key = this.getAttribute('data-key');
+            updateKeyState(key, false);
+        });
+    });
+    
+    // Game speed control
+    speedSlider.addEventListener('input', function() {
+        const value = this.value;
+        speedValue.textContent = value;
+        gameSpeedMultiplier = value / 5; // Base speed is at value 5
+    });
+    
+    // Restart button
+    restartButton.addEventListener('click', initGame);
+}
+
+// Helper function to update key state
+function updateKeyState(key, isPressed) {
+    switch (key) {
+        case 'w':
+            keys.w = isPressed;
+            break;
+        case 'a':
+            keys.a = isPressed;
+            break;
+        case 's':
+            keys.s = isPressed;
+            break;
+        case 'd':
+            keys.d = isPressed;
+            break;
+        case ' ':
+        case 'space':
+            keys.space = isPressed;
+            break;
+        case 'arrowup':
+            keys.arrowUp = isPressed;
+            break;
+        case 'arrowdown':
+            keys.arrowDown = isPressed;
+            break;
+        case 'arrowleft':
+            keys.arrowLeft = isPressed;
+            break;
+        case 'arrowright':
+            keys.arrowRight = isPressed;
+            break;
+        case 'enter':
+            keys.enter = isPressed;
+            break;
+    }
+}
+
+// Window resize handler
+function handleResize() {
+    resizeGameBoard();
+    
+    // Adjust element positions based on new scale
+    // This would be more complex for a full implementation
+    // but this gives the basic idea
+    if (player1 && player2) {
+        // Update all game elements
+        updateElementPositions();
+    }
+}
+
+// Update all game element positions based on current scale
+function updateElementPositions() {
+    // Update caterpillar segments
+    const updateCaterpillar = (caterpillar) => {
+        caterpillar.segments.forEach(segment => {
+            const scaledX = segment.x * scaleRatio;
+            const scaledY = segment.y * scaleRatio;
+            const scaledSize = SEGMENT_SIZE * scaleRatio;
+            
+            segment.element.style.width = scaledSize + 'px';
+            segment.element.style.height = scaledSize + 'px';
+            segment.element.style.left = scaledX + 'px';
+            segment.element.style.top = scaledY + 'px';
+        });
+    };
+    
+    if (player1) updateCaterpillar(player1);
+    if (player2) updateCaterpillar(player2);
+    
+    // Update beads
+    beads.forEach(bead => {
+        const scaledX = bead.x * scaleRatio;
+        const scaledY = bead.y * scaleRatio;
+        const scaledSize = BEAD_SIZE * scaleRatio;
+        
+        bead.element.style.width = scaledSize + 'px';
+        bead.element.style.height = scaledSize + 'px';
+        bead.element.style.left = scaledX + 'px';
+        bead.element.style.top = scaledY + 'px';
+    });
+    
+    // Update projectiles
+    projectiles.forEach(projectile => {
+        const scaledX = projectile.x * scaleRatio;
+        const scaledY = projectile.y * scaleRatio;
+        const scaledSize = PROJECTILE_SIZE * scaleRatio;
+        
+        projectile.element.style.width = scaledSize + 'px';
+        projectile.element.style.height = scaledSize + 'px';
+        projectile.element.style.left = scaledX + 'px';
+        projectile.element.style.top = scaledY + 'px';
+    });
+}
+
+// Start the game
+window.addEventListener('load', function() {
+    // Set up mobile controls display based on device
+    const isMobile = window.matchMedia("(max-width: 600px)").matches;
+    if (isMobile) {
+        mobileControls.classList.remove('hidden');
+        isMobileControlsVisible = true;
+        toggleControlsButton.textContent = 'Hide Mobile Controls';
+    }
+    
+    // Initialize game controls
+    setupControls();
+    
+    // Handle window resize
+    window.addEventListener('resize', handleResize);
+    
+    // Start the game
+    initGame();
+});
 
 // Game loop
 function gameLoop(timestamp) {
@@ -354,6 +579,11 @@ function gameLoop(timestamp) {
 
     // Check collisions
     checkCollisions();
+    
+    // Update element positions if scale has changed
+    if (scaleRatio !== 1) {
+        updateElementPositions();
+    }
 
     // Continue game loop
     requestAnimationFrame(gameLoop);
@@ -387,9 +617,13 @@ function updateProjectiles(deltaTime) {
         projectile.x += projectile.direction.x * PROJECTILE_SPEED * gameSpeedMultiplier;
         projectile.y += projectile.direction.y * PROJECTILE_SPEED * gameSpeedMultiplier;
         
-        // Update position
-        projectile.element.style.left = `${projectile.x - PROJECTILE_SIZE / 2}px`;
-        projectile.element.style.top = `${projectile.y - PROJECTILE_SIZE / 2}px`;
+        // Update position with scaling
+        const scaledX = projectile.x * scaleRatio;
+        const scaledY = projectile.y * scaleRatio;
+        const scaledSize = PROJECTILE_SIZE * scaleRatio;
+        
+        projectile.element.style.left = `${scaledX - (scaledSize / 2)}px`;
+        projectile.element.style.top = `${scaledY - (scaledSize / 2)}px`;
         
         // Check if out of bounds
         if (
@@ -665,47 +899,4 @@ function endGame(winnerId) {
         loop: 3,
         easing: 'easeInOutQuad'
     });
-}
-
-// Event listeners
-document.addEventListener('keydown', (e) => {
-    switch (e.key.toLowerCase()) {
-        case 'w': keys.w = true; break;
-        case 'a': keys.a = true; break;
-        case 's': keys.s = true; break;
-        case 'd': keys.d = true; break;
-        case ' ': keys.space = true; break;
-        case 'arrowup': keys.arrowUp = true; e.preventDefault(); break;
-        case 'arrowdown': keys.arrowDown = true; e.preventDefault(); break;
-        case 'arrowleft': keys.arrowLeft = true; e.preventDefault(); break;
-        case 'arrowright': keys.arrowRight = true; e.preventDefault(); break;
-        case 'enter': keys.enter = true; break;
-    }
-});
-
-document.addEventListener('keyup', (e) => {
-    switch (e.key.toLowerCase()) {
-        case 'w': keys.w = false; break;
-        case 'a': keys.a = false; break;
-        case 's': keys.s = false; break;
-        case 'd': keys.d = false; break;
-        case ' ': keys.space = false; break;
-        case 'arrowup': keys.arrowUp = false; break;
-        case 'arrowdown': keys.arrowDown = false; break;
-        case 'arrowleft': keys.arrowLeft = false; break;
-        case 'arrowright': keys.arrowRight = false; break;
-        case 'enter': keys.enter = false; break;
-    }
-});
-
-// Speed slider event listener
-speedSlider.addEventListener('input', function() {
-    const value = parseInt(this.value);
-    speedValue.textContent = value;
-    gameSpeedMultiplier = value / 5; // 5 is the default/middle value
-});
-
-restartButton.addEventListener('click', initGame);
-
-// Start the game when the page loads
-window.addEventListener('load', initGame); 
+} 
