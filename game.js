@@ -758,45 +758,106 @@ function endGameWithSpecialAnimation(winnerId) {
     overlay.style.left = '0';
     overlay.style.width = '100%';
     overlay.style.height = '100%';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
-    overlay.style.zIndex = '5';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    overlay.style.zIndex = '10';
     overlay.style.display = 'flex';
     overlay.style.flexDirection = 'column';
     overlay.style.justifyContent = 'center';
     overlay.style.alignItems = 'center';
     overlay.style.opacity = '0';
     
-    // Create the victory message
-    const victoryMessage = document.createElement('div');
-    victoryMessage.className = 'victory-message';
-    victoryMessage.textContent = 'GAME OVER';
-    victoryMessage.style.color = 'white';
-    victoryMessage.style.fontSize = '4rem';
-    victoryMessage.style.fontWeight = 'bold';
-    victoryMessage.style.textShadow = '0 0 20px rgba(255, 0, 0, 0.8)';
-    victoryMessage.style.marginBottom = '20px';
+    // Calculate the loser based on winner
+    const loserId = winnerId === 1 ? 2 : 1;
+    const winnerColor = winnerId === 1 ? '#4CAF50' : '#2196F3';
+    const loserColor = loserId === 1 ? '#4CAF50' : '#2196F3';
+    
+    // Create a dramatic explosion animation container
+    const explosionContainer = document.createElement('div');
+    explosionContainer.className = 'explosion-container';
+    explosionContainer.style.position = 'absolute';
+    explosionContainer.style.top = '0';
+    explosionContainer.style.left = '0';
+    explosionContainer.style.width = '100%';
+    explosionContainer.style.height = '100%';
+    explosionContainer.style.overflow = 'hidden';
+    explosionContainer.style.pointerEvents = 'none';
+    
+    // Create explosion particles
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'explosion-particle';
+        particle.style.position = 'absolute';
+        particle.style.width = Math.random() * 20 + 10 + 'px';
+        particle.style.height = particle.style.width;
+        particle.style.borderRadius = '50%';
+        particle.style.backgroundColor = i % 2 === 0 ? winnerColor : loserColor;
+        particle.style.opacity = '0';
+        particle.style.top = '50%';
+        particle.style.left = '50%';
+        particle.style.transform = 'translate(-50%, -50%)';
+        
+        explosionContainer.appendChild(particle);
+    }
+    
+    // Create the game over message
+    const gameOverMessage = document.createElement('div');
+    gameOverMessage.className = 'game-over-message';
+    gameOverMessage.textContent = 'GAME OVER';
+    gameOverMessage.style.color = 'white';
+    gameOverMessage.style.fontSize = '6rem';
+    gameOverMessage.style.fontWeight = 'bold';
+    gameOverMessage.style.textAlign = 'center';
+    gameOverMessage.style.textShadow = '0 0 30px rgba(255, 0, 0, 0.8), 0 0 10px rgba(255, 0, 0, 0.8)';
+    gameOverMessage.style.marginBottom = '30px';
+    gameOverMessage.style.opacity = '0';
+    gameOverMessage.style.transform = 'scale(3)';
+    
+    // Create the death message
+    const deathMessage = document.createElement('div');
+    deathMessage.className = 'death-message';
+    deathMessage.textContent = `Player ${loserId} Was Eliminated!`;
+    deathMessage.style.color = loserColor;
+    deathMessage.style.fontSize = '2.5rem';
+    deathMessage.style.fontWeight = 'bold';
+    deathMessage.style.textAlign = 'center';
+    deathMessage.style.textShadow = '0 0 15px rgba(255, 255, 255, 0.8)';
+    deathMessage.style.marginBottom = '20px';
+    deathMessage.style.opacity = '0';
     
     // Create the winner message
     const winnerMessage = document.createElement('div');
     winnerMessage.className = 'winner-message';
-    winnerMessage.textContent = `Player ${winnerId} Wins!`;
-    winnerMessage.style.color = winnerId === 1 ? '#4CAF50' : '#2196F3';
+    winnerMessage.innerHTML = `<span style="font-size: 3.5rem; color: ${winnerColor}; text-shadow: 0 0 20px rgba(255, 255, 255, 0.8)">PLAYER ${winnerId} WINS!</span>`;
     winnerMessage.style.fontSize = '3rem';
     winnerMessage.style.fontWeight = 'bold';
-    winnerMessage.style.textShadow = '0 0 15px rgba(255, 255, 255, 0.8)';
-    winnerMessage.style.marginBottom = '30px';
+    winnerMessage.style.textAlign = 'center';
+    winnerMessage.style.marginBottom = '40px';
+    winnerMessage.style.opacity = '0';
     
     // Create the restart button
     const restartBtn = document.createElement('button');
     restartBtn.textContent = 'Play Again';
-    restartBtn.style.padding = '15px 30px';
-    restartBtn.style.fontSize = '1.5rem';
-    restartBtn.style.backgroundColor = winnerId === 1 ? '#4CAF50' : '#2196F3';
+    restartBtn.style.padding = '15px 40px';
+    restartBtn.style.fontSize = '1.8rem';
+    restartBtn.style.backgroundColor = winnerColor;
     restartBtn.style.color = 'white';
     restartBtn.style.border = 'none';
     restartBtn.style.borderRadius = '5px';
     restartBtn.style.cursor = 'pointer';
-    restartBtn.style.boxShadow = '0 0 15px rgba(255, 255, 255, 0.5)';
+    restartBtn.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.7)';
+    restartBtn.style.transition = 'transform 0.2s, box-shadow 0.2s';
+    restartBtn.style.opacity = '0';
+    
+    // Add hover effect for restart button
+    restartBtn.onmouseover = function() {
+        this.style.transform = 'scale(1.1)';
+        this.style.boxShadow = '0 0 30px rgba(255, 255, 255, 0.9)';
+    };
+    
+    restartBtn.onmouseout = function() {
+        this.style.transform = 'scale(1)';
+        this.style.boxShadow = '0 0 20px rgba(255, 255, 255, 0.7)';
+    };
     
     // Add event listener to restart button
     restartBtn.addEventListener('click', function() {
@@ -804,47 +865,92 @@ function endGameWithSpecialAnimation(winnerId) {
         initGame();
     });
     
+    // Add message container to hold text elements
+    const messageContainer = document.createElement('div');
+    messageContainer.style.display = 'flex';
+    messageContainer.style.flexDirection = 'column';
+    messageContainer.style.alignItems = 'center';
+    messageContainer.style.justifyContent = 'center';
+    messageContainer.style.zIndex = '11';
+    messageContainer.style.width = '100%';
+    messageContainer.style.padding = '0 20px';
+    
+    // Add elements to message container
+    messageContainer.appendChild(gameOverMessage);
+    messageContainer.appendChild(deathMessage);
+    messageContainer.appendChild(winnerMessage);
+    messageContainer.appendChild(restartBtn);
+    
     // Add elements to overlay
-    overlay.appendChild(victoryMessage);
-    overlay.appendChild(winnerMessage);
-    overlay.appendChild(restartBtn);
+    overlay.appendChild(explosionContainer);
+    overlay.appendChild(messageContainer);
     
     // Add overlay to game board
     gameBoard.appendChild(overlay);
     
-    // Animate the game board
+    // Animate the explosion particles
+    anime({
+        targets: explosionContainer.querySelectorAll('.explosion-particle'),
+        translateX: function() { return anime.random(-500, 500); },
+        translateY: function() { return anime.random(-500, 500); },
+        scale: function() { return anime.random(1, 3); },
+        opacity: [
+            { value: 1, duration: 100 },
+            { value: 0, duration: 2000 }
+        ],
+        delay: anime.stagger(10),
+        duration: 2000,
+        easing: 'easeOutExpo'
+    });
+    
+    // Screen shake animation
     anime({
         targets: gameBoard,
-        backgroundColor: [
-            { value: '#222', duration: 100 },
-            { value: '#500', duration: 200 },
-            { value: '#222', duration: 300 }
+        translateX: [
+            { value: -15, duration: 100 },
+            { value: 15, duration: 100 },
+            { value: -10, duration: 100 },
+            { value: 10, duration: 100 },
+            { value: -5, duration: 100 },
+            { value: 5, duration: 100 },
+            { value: 0, duration: 100 }
         ],
-        boxShadow: [
-            { value: '0 10px 20px rgba(0, 0, 0, 0.2)', duration: 100 },
-            { value: '0 10px 30px rgba(255, 0, 0, 0.5)', duration: 200 },
-            { value: '0 10px 20px rgba(0, 0, 0, 0.2)', duration: 300 }
+        translateY: [
+            { value: -10, duration: 100 },
+            { value: 10, duration: 100 },
+            { value: -5, duration: 100 },
+            { value: 5, duration: 100 },
+            { value: 0, duration: 100 }
         ],
-        loop: 3,
-        easing: 'easeInOutQuad'
+        easing: 'easeInOutSine'
     });
     
     // Animate the overlay
     anime({
         targets: overlay,
         opacity: [0, 1],
-        duration: 1000,
+        duration: 500,
         easing: 'easeOutQuad'
     });
     
-    // Animate the victory message
+    // Animate the game over message
     anime({
-        targets: victoryMessage,
+        targets: gameOverMessage,
         scale: [3, 1],
         opacity: [0, 1],
         duration: 1500,
-        delay: 500,
+        delay: 300,
         easing: 'easeOutElastic(1, .5)'
+    });
+    
+    // Animate the death message
+    anime({
+        targets: deathMessage,
+        translateY: [30, 0],
+        opacity: [0, 1],
+        duration: 800,
+        delay: 1000,
+        easing: 'easeOutQuad'
     });
     
     // Animate the winner message
@@ -853,7 +959,7 @@ function endGameWithSpecialAnimation(winnerId) {
         scale: [0.5, 1],
         opacity: [0, 1],
         duration: 1000,
-        delay: 1000,
+        delay: 1500,
         easing: 'easeOutQuad'
     });
     
@@ -863,40 +969,30 @@ function endGameWithSpecialAnimation(winnerId) {
         translateY: [50, 0],
         opacity: [0, 1],
         duration: 800,
-        delay: 1500,
+        delay: 2000,
         easing: 'easeOutQuad'
     });
-}
-
-// Regular end game
-function endGame(winnerId) {
-    gameRunning = false;
-    winnerText.textContent = `Player ${winnerId} wins!`;
-    gameOverScreen.classList.remove('hidden');
     
-    // Add game over animation using anime.js
-    anime({
-        targets: gameOverScreen,
-        scale: [0.8, 1],
-        opacity: [0, 1],
-        duration: 800,
-        easing: 'easeOutElastic(1, .5)'
-    });
-
-    // Add a special animation for the game board
+    // Background flash animation
     anime({
         targets: gameBoard,
         backgroundColor: [
             { value: '#222', duration: 100 },
-            { value: '#500', duration: 200 },
+            { value: '#700', duration: 200 },
             { value: '#222', duration: 300 }
         ],
         boxShadow: [
             { value: '0 10px 20px rgba(0, 0, 0, 0.2)', duration: 100 },
-            { value: '0 10px 30px rgba(255, 0, 0, 0.5)', duration: 200 },
+            { value: '0 10px 40px rgba(255, 0, 0, 0.7)', duration: 200 },
             { value: '0 10px 20px rgba(0, 0, 0, 0.2)', duration: 300 }
         ],
         loop: 3,
         easing: 'easeInOutQuad'
     });
+}
+
+// Regular end game
+function endGame(winnerId) {
+    // Simply use the enhanced special animation for all game over scenarios
+    endGameWithSpecialAnimation(winnerId);
 } 
